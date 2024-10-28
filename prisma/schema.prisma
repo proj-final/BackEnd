@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phoneNumber     String
+  address   String
+  imageUrl  String? 
+  orders    Order[]
+  dishRatings DishRating[] 
+  dishfavorites   Dish[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+ 
+}
+
+
+model Chief {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phoneNumber     String
+  IDCard String[]
+  imageUrl  String? 
+  dishes    Dish[]   
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model DeliveryBoy {
+  id        Int      @id @default(autoincrement())
+  orders    Order[]  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Dish {
+  id          Int      @id @default(autoincrement())
+  title       String
+  category    String
+  description String
+  price       Float
+  imageUrl    String[] 
+  duration    Float
+  ChiefId     Int      
+  Chiefs      Chief     @relation(fields: [ChiefId], references: [id]) 
+  ratings     DishRating[] 
+  Orders      Order[]
+  dishFavorite Client[]
+  ingDishes   IngDish[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model Ingredients {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  ingDishes IngDish[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+
+model Order {
+  id              Int          @id @default(autoincrement())
+  totalAmount     Float
+  quantity        Int
+  status          OrderStatus  
+  clientId        Int            
+  client          Client       @relation(fields: [clientId], references: [id])
+  dishId          Int 
+  dish            Dish         @relation(fields: [dishId], references: [id])
+  deliveryBoyId   Int 
+  deliveryBoy     DeliveryBoy  @relation(fields: [deliveryBoyId], references: [id])
+  ingDishes       IngDish[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+enum OrderStatus {
+  PENDING
+  PREPARING
+  DELIVERING
+  DELIVERED
+  CANCELLED
+}
+model IngDish {
+  id            Int         @id @default(autoincrement())
+  dish          Dish        @relation(fields: [dishId], references: [id])
+  dishId        Int
+  ingredient    Ingredients @relation(fields: [ingredientId], references: [id])
+  ingredientId  Int
+  order         Order       @relation(fields: [orderId], references: [id])
+  orderId       Int
+  added         Boolean
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([dishId, ingredientId, orderId])
+}
+
+model DishRating {
+  id        Int      @id @default(autoincrement())   
+  rating    Int      
+  comment   String? 
+  clientId  Int     
+  client    Client   @relation(fields: [clientId], references: [id])
+  dishId    Int
+  dish      Dish     @relation(fields: [dishId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+
+
+model Admin {
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String    @unique
+  password    String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
