@@ -1,7 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
-
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 //////////////////////////////////// Helper function to validate email format
@@ -62,7 +61,7 @@ const registerClient = async (req, res) => {
 
 //////////////////////////////////////////// Chef Registration with validation
 const registerChef = async (req, res) => {
-  const { name, email, password, confirmPassword, phone, imageUrl } = req.body;
+  const { name, email, password, confirmPassword,  phoneNumber, imageUrl } = req.body;
 
   // Validate required fields
   if (!name || !email || !password || !confirmPassword) {
@@ -89,17 +88,18 @@ const registerChef = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const newChef = await prisma.chief.create({
+    const newChef = await prisma.Chief.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        phone,
+        phoneNumber,
         imageUrl,
       },
     });
     res.status(201).json(newChef);
   } catch (error) {
+    console.error("Error creating chef:", error);
     res.status(500).json({ error: "Error creating chef" });
   }
 };
