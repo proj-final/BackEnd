@@ -16,6 +16,8 @@ router.post('/chef/register', registerChef);
 
 // DeliveryBoy Routes
 router.post('/deliveryboy/register', registerDeliveryBoy);
+
+/// login 
  router.post('/login',login)
 
 module.exports = router;
