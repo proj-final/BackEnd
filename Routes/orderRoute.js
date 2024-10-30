@@ -1,11 +1,16 @@
 // routes/orderRoutes.js
 const express = require('express');
-const router = express.Router();
-const { reserveOrder, getOrders, deleteOrderById } = require('../Controller/OrderController');
+const Orderouter = express.Router();
+const { reserveOrder,getClientOrders, deleteOrderById } = require('../Controllers/OrderController');
 
 // Route to reserve an order
-router.post('/reserve', reserveOrder);
-router.get('/orders', getOrders);
-router.delete("/orders/:id", deleteOrderById);
+Orderouter.post('/reserve', reserveOrder);
 
-module.exports = router;
+// Route to fetch all orders
+// routes/orderRoutes.js
+Orderouter.get('/orders/:clientId', getClientOrders);
+
+// Route to delete an order by ID
+Orderouter.delete("/orders/:id", deleteOrderById);
+
+module.exports = Orderouter;
