@@ -7,7 +7,7 @@ const categoryRouter = require("./Routes/categoryDishRoutes.js");
 const creatdishRouter = require("./Routes/creatDishRoute.js");
 const chiefRouter = require("./Routes/chiefRoutes.js");
 const authroutes = require("./Routes/authroutes.js");
-const orderRouter = require("./Routes/orderRoutes"); // Import your order routes
+const Orderouter=require("./Routes/orderRoute.js") // Import your order routes
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use("/api/users", authroutes);
 app.use("/api/category", categoryRouter);
 app.use("/api/create", creatdishRouter);
 app.use("/api/chief", chiefRouter);
-app.use("/api", orderRouter); // Use the order routes
+app.use("/api/orders", Orderouter); // Use the order routes
 
 const PORT = 5000;
 
