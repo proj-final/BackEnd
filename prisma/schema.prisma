@@ -47,10 +47,10 @@ model Chief {
 
 model DeliveryBoy {
   id        Int      @id @default(autoincrement())
-  name      String   // New field for name
-  email     String   // New field for email
-  phone     String  // New field for phone, optional
-  imageUrl  String // New field for image URL, optional
+  name      String 
+  email     String   
+  phone     String  
+  imageUrl  String 
   cardId    String[]
   orders    Order[]  
   createdAt DateTime @default(now())
