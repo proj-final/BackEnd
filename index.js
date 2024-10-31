@@ -5,7 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const categoryRouter = require("./Routes/categoryDishRoutes.js");
 const creatdishRouter = require("./Routes/creatDishRoute.js");
-const chiefRouter = require("./Routes/chiefRoutes.js");
+const getAllChefsRouter = require("./Routes/getallchiefRoute.js");
 const authroutes = require("./Routes/authroutes.js");
 const Orderouter=require("./Routes/orderRoute.js") 
 const allOrdersrouter=require("./Routes/deliveryOrderRouter.js")
@@ -22,7 +22,7 @@ app.use("/api/users", authroutes);
 app.use("/api",detailsrouter)
 app.use("/api/category", categoryRouter);
 app.use("/api/create", creatdishRouter);
-app.use("/api/chief", chiefRouter);
+app.use("/api", getAllChefsRouter);
 app.use("/api/orders", Orderouter)
 app.use("/api",allOrdersrouter)
 
