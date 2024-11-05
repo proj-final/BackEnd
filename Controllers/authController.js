@@ -151,46 +151,46 @@ const registerDeliveryBoy = async (req, res) => {
 };
 
 /////////////////////////// Admin Registration with validation
-const registerAdmin = async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+// const registerAdmin = async (req, res) => {
+//   const { name, email, password, confirmPassword } = req.body;
 
-  // Validate required fields
-  if (!name || !email || !password || !confirmPassword) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+//   // Validate required fields
+//   if (!name || !email || !password || !confirmPassword) {
+//     return res.status(400).json({ error: "All fields are required" });
+//   }
 
-  // Validate email format
-  if (!validateEmail(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
-  }
+//   // Validate email format
+//   if (!validateEmail(email)) {
+//     return res.status(400).json({ error: "Invalid email format" });
+//   }
 
-  // Validate password length
-  if (password.length < 8) {
-    return res
-      .status(400)
-      .json({ error: "Password must be at least 8 characters long" });
-  }
+//   // Validate password length
+//   if (password.length < 8) {
+//     return res
+//       .status(400)
+//       .json({ error: "Password must be at least 8 characters long" });
+//   }
 
-  // Validate password match
-  if (password !== confirmPassword) {
-    return res.status(400).json({ error: "Passwords do not match" });
-  }
+//   // Validate password match
+//   if (password !== confirmPassword) {
+//     return res.status(400).json({ error: "Passwords do not match" });
+//   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+//   const hashedPassword = await bcrypt.hash(password, 10);
 
-  try {
-    const newAdmin = await prisma.admin.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    });
-    res.status(201).json(newAdmin);
-  } catch (error) {
-    res.status(500).json({ error: "Error creating admin" });
-  }
-};
+//   try {
+//     const newAdmin = await prisma.admin.create({
+//       data: {
+//         name,
+//         email,
+//         password: hashedPassword,
+//       },
+//     });
+//     res.status(201).json(newAdmin);
+//   } catch (error) {
+//     res.status(500).json({ error: "Error creating admin" });
+//   }
+// };
 //////////////////////////////////////////////////////////////////////////////////////////////
 const login = async (req, res) => {
   const { email, password } = req.body;
