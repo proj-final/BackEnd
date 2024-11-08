@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-//////////////////////////////////// Helper function to validate email format
+// Helper function to validate email format
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -11,10 +11,7 @@ const validateEmail = (email) => {
 
 // Client Registration with validation
 const registerClient = async (req, res) => {
-  console.log(req.body);
-
-  const { name, email, password, confirmPassword, phone, address, imageUrl } =
-    req.body;
+  const { name, email, password, confirmPassword, phoneNumber, address, imageUrl } = req.body;
 
   // Validate required fields
   if (!name || !email || !password || !confirmPassword) {
@@ -28,9 +25,7 @@ const registerClient = async (req, res) => {
 
   // Validate password length
   if (password.length < 8) {
-    return res
-      .status(400)
-      .json({ error: "Password must be at least 8 characters long" });
+    return res.status(400).json({ error: "Password must be at least 8 characters long" });
   }
 
   // Validate password match
@@ -46,22 +41,21 @@ const registerClient = async (req, res) => {
         name,
         email,
         password: hashedPassword,
-        phone,
+        phoneNumber,
         address,
         imageUrl,
       },
     });
     res.status(201).json(newClient);
   } catch (error) {
-    console.log(error);
-
+    console.error(error);
     res.status(500).json({ error: "Error creating client" });
   }
 };
 
-//////////////////////////////////////////// Chef Registration with validation
+// Chef Registration with validation
 const registerChef = async (req, res) => {
-  const { name, email, password, confirmPassword,  phoneNumber, imageUrl } = req.body;
+  const { name, email, password, confirmPassword, phoneNumber, imageUrl } = req.body;
 
   // Validate required fields
   if (!name || !email || !password || !confirmPassword) {
@@ -75,9 +69,7 @@ const registerChef = async (req, res) => {
 
   // Validate password length
   if (password.length < 8) {
-    return res
-      .status(400)
-      .json({ error: "Password must be at least 8 characters long" });
+    return res.status(400).json({ error: "Password must be at least 8 characters long" });
   }
 
   // Validate password match
@@ -88,7 +80,7 @@ const registerChef = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const newChef = await prisma.Chief.create({
+    const newChef = await prisma.chief.create({
       data: {
         name,
         email,
@@ -104,10 +96,9 @@ const registerChef = async (req, res) => {
   }
 };
 
-///////////////////////////////// DeliveryBoy Registration with validation
+// DeliveryBoy Registration with validation
 const registerDeliveryBoy = async (req, res) => {
-  const { name, email, password, confirmPassword, phone, bio, imageUrl } =
-    req.body;
+  const { name, email, password, confirmPassword, phone, imageUrl } = req.body;
 
   // Validate required fields
   if (!name || !email || !password || !confirmPassword) {
@@ -121,9 +112,7 @@ const registerDeliveryBoy = async (req, res) => {
 
   // Validate password length
   if (password.length < 8) {
-    return res
-      .status(400)
-      .json({ error: "Password must be at least 8 characters long" });
+    return res.status(400).json({ error: "Password must be at least 8 characters long" });
   }
 
   // Validate password match
@@ -140,58 +129,17 @@ const registerDeliveryBoy = async (req, res) => {
         email,
         password: hashedPassword,
         phone,
-        bio,
         imageUrl,
       },
     });
     res.status(201).json(newDeliveryBoy);
   } catch (error) {
+    console.error("Error creating delivery boy:", error);
     res.status(500).json({ error: "Error creating delivery boy" });
   }
 };
 
-/////////////////////////// Admin Registration with validation
-// const registerAdmin = async (req, res) => {
-//   const { name, email, password, confirmPassword } = req.body;
-
-//   // Validate required fields
-//   if (!name || !email || !password || !confirmPassword) {
-//     return res.status(400).json({ error: "All fields are required" });
-//   }
-
-//   // Validate email format
-//   if (!validateEmail(email)) {
-//     return res.status(400).json({ error: "Invalid email format" });
-//   }
-
-//   // Validate password length
-//   if (password.length < 8) {
-//     return res
-//       .status(400)
-//       .json({ error: "Password must be at least 8 characters long" });
-//   }
-
-//   // Validate password match
-//   if (password !== confirmPassword) {
-//     return res.status(400).json({ error: "Passwords do not match" });
-//   }
-
-//   const hashedPassword = await bcrypt.hash(password, 10);
-
-//   try {
-//     const newAdmin = await prisma.admin.create({
-//       data: {
-//         name,
-//         email,
-//         password: hashedPassword,
-//       },
-//     });
-//     res.status(201).json(newAdmin);
-//   } catch (error) {
-//     res.status(500).json({ error: "Error creating admin" });
-//   }
-// };
-//////////////////////////////////////////////////////////////////////////////////////////////
+// Login function for Client, Chef, and Delivery Boy
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -212,12 +160,6 @@ const login = async (req, res) => {
       userType = "deliveryBoy";
     }
 
-    if (!user) {
-      // Check for Admin
-      user = await prisma.admin.findUnique({ where: { email } });
-      userType = "admin";
-    }
-
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -226,6 +168,7 @@ const login = async (req, res) => {
     const token = jwt.sign({ id: user.id, userType }, process.env.JWTSelf, {
       expiresIn: "10h",
     });
+    
     res.json({
       token,
       userType,
@@ -233,16 +176,15 @@ const login = async (req, res) => {
         name: user.name,
         imageUrl: user.imageUrl,
         email: user.email,
-        phone: user.phone,
+        phone: user.phone || user.phoneNumber, // Adjust for Delivery Boy and Chef
         id: user.id,
       },
     });
   } catch (error) {
+    console.error("Error logging in:", error);
     res.status(500).json({ error: "Error logging in" });
   }
 };
-
-////////////////////////////////////////
 
 module.exports = {
   registerClient,
