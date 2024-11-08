@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/client/register', registerClient);
 
 // Chef Routes
-router.post('/chef/register', registerChef);
+router.post('/chief/register', registerChef);
 
 // DeliveryBoy Routes
 router.post('/deliveryboy/register', registerDeliveryBoy);

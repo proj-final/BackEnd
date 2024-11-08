@@ -11,8 +11,10 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
- 
 }
+
+
+
 
 
 model Client {
@@ -51,7 +53,7 @@ model DeliveryBoy {
   email     String   
   phone     String  
   imageUrl  String 
-  cardId    String[]
+  cardIds   Json     // Changed to Json type to store multiple values
   orders    Order[]  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -144,3 +146,4 @@ model Admin {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
