@@ -16,40 +16,30 @@ const getAllOrders = async (req, res) => {
         }
       }
     });
-
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
-    res.status(500).json({ error: "Error fetching orders" });
+    res.status(500).json({ error: error.message || "Error fetching orders" });
   }
 };
 
 // Fetch all Delivery Boys
 const getAllDeliveryBoys = async (req, res) => {
   try {
-    console.log("Fetching delivery boys...");
-
     const deliveryBoys = await prisma.deliveryBoy.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        imageUrl: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        orders: {
+          include: {
+            client: true,
+            dish: true
+          }
+        }
       }
     });
-
-    if (!deliveryBoys || deliveryBoys.length === 0) {
-      console.log("No delivery boys found");
-      return res.status(404).json({ error: "No delivery boys found" });
-    }
-
     res.status(200).json(deliveryBoys);
   } catch (error) {
-    console.error("Error fetching delivery boys:", error);
-    res.status(500).json({ error: "Error fetching delivery boys", details: error.message });
+    console.error("Error fetching delivery boys with orders:", error);
+    res.status(500).json({ error: error.message || "Error fetching delivery boys with orders" });
   }
 };
 
@@ -58,50 +48,48 @@ const getAllDishes = async (req, res) => {
   try {
     const dishes = await prisma.dish.findMany({
       include: {
-        Chiefs: true,         // Include the Chief who created the dish
-        ratings: true,        // Include ratings for the dish
-        Orders: true,         // Include orders that contain this dish
+        Chiefs: true,
+        ratings: true,
+        Orders: true,
         ingDishes: {
           include: {
-            ingredient: true, // Include ingredients used in the dish
+            ingredient: true
           }
         }
       }
     });
-
     res.status(200).json(dishes);
   } catch (error) {
     console.error("Error fetching dishes:", error);
-    res.status(500).json({ error: "Error fetching dishes" });
+    res.status(500).json({ error: error.message || "Error fetching dishes" });
   }
 };
 
-// Fetch all Clients
+// Fetch all Clients with orders and favorite dishes
 const getAllClients = async (req, res) => {
   try {
     const clients = await prisma.client.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phoneNumber: true,
-        address: true,
-        imageUrl: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        orders: {
+          include: {
+            dish: true,
+            deliveryBoy: true
+          }
+        },
+        dishfavorites: true
       }
-    }); 
-    res.status(200).json(clients); 
+    });
+    res.status(200).json(clients);
   } catch (error) {
-    console.error("Error fetching clients:", error); // Improved error logging
-    res.status(500).json({ error: 'Error fetching clients' });
+    console.error("Error fetching clients with orders and favorite dishes:", error);
+    res.status(500).json({ error: error.message || "Error fetching clients with orders and favorite dishes" });
   }
 };
 
 // Fetch all Chefs
 const getAllChefs = async (req, res) => {
   try {
-    const chefs = await prisma.chief.findMany({ 
+    const chefs = await prisma.chief.findMany({
       select: {
         id: true,
         name: true,
@@ -119,18 +107,16 @@ const getAllChefs = async (req, res) => {
             duration: true,
             imageUrl: true
           }
-        }, 
-      },
+        }
+      }
     });
-
     res.status(200).json(chefs);
   } catch (error) {
     console.error("Error fetching chefs:", error);
-    res.status(500).json({ error: "Error fetching chefs" });
+    res.status(500).json({ error: error.message || "Error fetching chefs" });
   }
 };
 
-// Export all the functions in a single object
 module.exports = {
   getAllOrders,
   getAllDeliveryBoys,

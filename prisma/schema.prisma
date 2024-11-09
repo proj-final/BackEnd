@@ -50,10 +50,11 @@ model Chief {
 model DeliveryBoy {
   id        Int      @id @default(autoincrement())
   name      String 
-  email     String   
+  email     String 
+  password    String  
   phone     String  
   imageUrl  String 
-  cardIds   Json     // Changed to Json type to store multiple values
+  cardIds   Json     
   orders    Order[]  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
