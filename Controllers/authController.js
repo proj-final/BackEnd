@@ -49,16 +49,16 @@ const registerClient = async (req, res) => {
     res.status(201).json(newClient);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error creating client" });
+    res.status(500).json({ error: "Error creating client", details: error.message });
   }
 };
 
 // Chef Registration with validation
 const registerChef = async (req, res) => {
-  const { name, email, password, confirmPassword, phoneNumber, imageUrl } = req.body;
+  const { name, email, password, confirmPassword, phoneNumber, imageUrl, IDCard } = req.body;
 
   // Validate required fields
-  if (!name || !email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword || !IDCard) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -87,21 +87,22 @@ const registerChef = async (req, res) => {
         password: hashedPassword,
         phoneNumber,
         imageUrl,
+        IDCard,  // Ensure this is an array of strings
       },
     });
     res.status(201).json(newChef);
   } catch (error) {
     console.error("Error creating chef:", error);
-    res.status(500).json({ error: "Error creating chef" });
+    res.status(500).json({ error: "Error creating chef", details: error.message });
   }
 };
 
 // DeliveryBoy Registration with validation
 const registerDeliveryBoy = async (req, res) => {
-  const { name, email, password, confirmPassword, phone, imageUrl } = req.body;
+  const { name, email, password, confirmPassword, phone, imageUrl, cardIds } = req.body;
 
   // Validate required fields
-  if (!name || !email || !password || !confirmPassword) {
+  if (!name || !email || !password || !confirmPassword || !cardIds) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -130,12 +131,13 @@ const registerDeliveryBoy = async (req, res) => {
         password: hashedPassword,
         phone,
         imageUrl,
+        cardIds,  // Ensure this is in a proper format (JSON array)
       },
     });
     res.status(201).json(newDeliveryBoy);
   } catch (error) {
-    console.error("Error creating delivery boy:", error);
-    res.status(500).json({ error: "Error creating delivery boy" });
+    console.error("Error creating delivery boy:", error.message);  // Log the specific error message
+    res.status(500).json({ error: "Error creating delivery boy", details: error.message });
   }
 };
 
@@ -182,7 +184,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Error logging in:", error);
-    res.status(500).json({ error: "Error logging in" });
+    res.status(500).json({ error: "Error logging in", details: error.message });
   }
 };
 
